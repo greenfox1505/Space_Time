@@ -1,0 +1,14 @@
+{
+  "name": "space_time",
+  "version": "0.0.1",
+  "description": "A prototype chat system inspired by Google Spaces.",
+  "main": "run.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zombie Jerky",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.1"
+  }
+}
