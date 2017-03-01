@@ -29,16 +29,20 @@ todo: talk about layouts? CSS is hard... Bootstrap and Angular will probably be 
 A basic explination of how each network payload is implemented
 
 ##GetTopicList
+URL=/API/GetTopicList
 gets json list of topic titles or links
 
 ##PutTopic
-create new topic, either with a title or link
+URL=/API/PutTopic
+create new topic, either with a title or link, content in body
 
 ##GetTopic
+URL=/API/GetTopic/$(Topic_UUID)
 gets json list of given topic's messages
 
-##PutMessage
-post message. needs message payload
+##PutComment
+URL=/API/PutComment
+post comment. content in body
 
 
 #Host
