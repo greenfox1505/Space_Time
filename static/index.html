@@ -3,17 +3,97 @@
 <head>
 	<title>Space Time ProtoType</title>
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="./SpaceTime.css">
 	<script src="./angular.min.js"></script>
 </head>
-<body>
+<body ng-app="Space_Time" ng-controller="main" class="ng-scope">
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<h4 align="right">Space-Time!</h4>
+			<h1 align="right">Space-Time!</h1>
+			<h6 align="right">Logged in as<br>{{username}}</h6>
 		</div>
 	</div>
 	<div class="row">
-		
+			<div class="col-md-6 col-lg-4" ng-repeat="topic in Topics | orderBy:'-time'">
+				<div class="topic">
+					<h2>{{topic.name}}</h2><h6 align="right">{{GetDate(topic.time)}}</h6><h6>-{{topic.owner}}</h6>
+					<div class="row comment" ng-repeat="comment in topic.comments | orderBy:'time'">
+						<div class="col-md-12" title="{{GetDate(comment.time)}}"><p>{{comment.text}}</p></div>
+						<div title="{{GetDate(comment.time)}}" class="col-md-12"><h6 class="Signature" align="right">-{{comment.owner}}</h6></div>
+					</div>
+					<form ng-submit="Submit(topic)">
+						<input type="text" class="chatBox" ng-model="topic.pendingComment"/>
+					</form>
+				</div>
+			</div>
 	</div>
+<script>
+var app = angular.module('Space_Time', []);
+app.controller('main', ['$scope', '$http','$interval',function($scope, $http,$interval) {
+	$scope.now = Date.now();
+	$scope.Math = Math;
+	$scope.GetDate = function(epoch){
+		return new Date(epoch).toString();
+	};
+	
+	$scope.username = localStorage.getItem("username");
+	//onload, check for username. if none, request user input!
+	if( $scope.username == null ){
+		$scope.username = prompt("Sorry this sucks, but please enter your user name:");
+		localStorage.setItem("username",$scope.username);
+	}
+	$scope.RefreshData = function(){
+		$http.get("/API/GetTopicList")
+		.then(function(response) {
+			//console.log(response);
+			$scope.topicsKeys = response.data;
+			$scope.Topics = []
+			
+			console.log(response.data);
+			for(i in response.data){
+				$http.get("/API/GetTopicData/" + response.data[i]).
+				then(function(responce){
+					console.log(responce.data);
+					$scope.Topics.push(responce.data);
+				});
+			}
+			
+		});
+	};$scope.RefreshData();
+	$http.get("/API/LastAction").
+	then(function(res){
+		LastAction = res.data.a;
+		console.log("LastAction:",LastAction);
+		$interval(function(){
+			$http.get("/API/LastAction").
+			then(function(res){
+				if(	LastAction != res.data.a ){
+					LastAction = res.data.a;
+					$scope.RefreshData();
+				}
+
+			})
+		},1000);
+
+	})
+	
+	$scope.Submit = function(topic){
+		var message = {
+			name:$scope.username,
+			comment:topic.pendingComment
+		}
+		if(message.comment != "")
+		{
+			topic.pendingComment = "";
+			console.log(message);
+			$http.put("/API/PutComment/" + topic.key, message).
+			then(function(){
+				location.reload();
+			})
+		}
+	}
+}]);
+</script>
 </body>
 </html>

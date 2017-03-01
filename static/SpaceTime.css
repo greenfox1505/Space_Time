@@ -1,0 +1,26 @@
+body {
+	background:black;
+	color:white;
+}
+
+.topic {
+	border-style : solid;
+	background:white;
+	color:black;
+	margin:3px;
+	padding:6px;
+}
+.comment {
+	margin:1.5px -3px ;
+	border-style : solid;
+	border-width: 1px;
+}
+
+.chatBox {
+	width:100%;
+	max-width: 100%; 
+
+}
+.Signature {
+	margin: -15px 0px 5px 0px;
+}
