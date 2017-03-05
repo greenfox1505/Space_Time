@@ -1,9 +1,22 @@
 var UUID = require("./UUID.js");
 
-module.exports = function(TopicsFile){
+var fs = require('fs');
+
+module.exports = function(TopicArgs){
+	var modified = false;
 	var output = {};
 	
-	var Topics = require("./topics.json")
+	var Topics = require(TopicArgs.saveFile)
+	
+	setInterval(function(){
+		if(modified){
+			console.log("saving!");
+			modified = false;
+			fs.writeFile(TopicArgs.saveFile,JSON.stringify(Topics),function(){
+					console.log(Topics);
+				})
+		}
+	},TopicArgs.saveInterval);
 	//todo: dump to TopicsFile on interval!
 	
 	output.getTopicList = function(){
@@ -23,14 +36,15 @@ module.exports = function(TopicsFile){
 	}
 	
 	output.putTopic = function(TopicData){
+		modified = true;
 		/*TopicData expected:
-		 * name: name or link of topic
+		 * nanme: name or link of topic
 		 * owner: poster of topic
 		 * time: epoch of create time
 		 */
 		 var newTopic = {
 			 key:UUID(),//random at post
-			 name:TopicData.name,
+			 name:TopicData.title,
 			 owner:TopicData.owner,
 			 time:TopicData.time,
 			 comments:[] //filled by users!
@@ -39,6 +53,7 @@ module.exports = function(TopicsFile){
 		 return newTopic.key;
 	}
 	output.putComment = function(TopicKey,Comment){
+		modified = true;
 		var newComment = {
 			owner:Comment.owner,
 			time:Comment.time,

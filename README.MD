@@ -16,11 +16,19 @@ Inspired by Google Space.
 * BelowTheFold: someday, will will have too much data for one page load; we'll cross that bridge later
 
 #This this proof of concept WILL have:
-* LogIn: ask for user name. That's stored locally.
-* Posting: everyone can post.
-* Viewing: everyone can veiw a list of all posts and comment
-* PostTimes: every interaction will be timestamped (mostly writen here so I don't forget to do this
-* Reload: server will preserve data on reboot by dumping to flat JSON file
+* ~~LogIn: ask for user name. That's stored locally.~~
+* ~~Posting: everyone can post.~~
+* ~~Viewing: everyone can veiw a list of all posts and comment~~
+* ~~PostTimes: every interaction will be timestamped (mostly writen here so I don't forget to do this~~
+* ~~Reload: server will preserve data on reboot by dumping to flat JSON file~~
+
+#Next Steps:
+* Real Login: Firebase or other oauth log in system
+* Deletes: Admin or Poster can delete their stuff
+* Material: this CSS sucks!
+* Card based layout
+* Rework comments: needs UUID? Maybe? Deletes need accounting
+
 
 #Layout
 todo: talk about layouts? CSS is hard... Bootstrap and Angular will probably be involved.
