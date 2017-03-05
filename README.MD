@@ -28,7 +28,23 @@ Inspired by Google Space.
 * Material: this CSS sucks!
 * Card based layout
 * Rework comments: needs UUID? Maybe? Deletes need accounting
+* Better Update Sys: see below!
+* LINK PARSING!: holy damn, I need link parsing bad...
 
+#Update Page System:
+I need to write a system for better managing updates. At the moment, I 
+request a page every secound and update my page when that text is changed.
+
+That sucks. It's slow, requires lots of additional connection, and uses
+undreds of times more bandwidth than it needs to.
+
+There are several new ways I could do this. Websockets may be the 
+easiest, but they are also probably the least standard. Its not 
+supported by ExpressJS without extra plugins. I could just leave the 
+connection open and then just push changed content to cleint on request.
+That could result in lots of extra unneeded connections.
+
+I'm going to ask Reddit and work on something else for now.
 
 #Layout
 todo: talk about layouts? CSS is hard... Bootstrap and Angular will probably be involved.
