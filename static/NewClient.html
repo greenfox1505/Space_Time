@@ -2,11 +2,171 @@
 <html lang="en">
 <head>
 	<title>Space Time ProtoType</title>
-	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="./bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./SpaceTime.css">
 	<script src="./angular.min.js"></script>
+	<script src="./angular-sanitize.js"></script>
 </head>
 <body ng-app="Space_Time" ng-controller="main" class="ng-scope">
 <div class="container">
+	<div class="row">
+		<div class="col-xs-4 col-sm-2">
+			<div class="createBox"><div ng-click="createTopic()" class="createButton"><center><h1>New<br>Post</h1></center></div></div>
+		</div>
+		<div class="col-xs-8 col-sm-10">
+			<h1 align="right">Space-Time!</h1>
+			<h6 align="right">Logged in as<br>{{username}}</h6>
+		</div>
+	</div>
+	<div class="row">
+			<div class="col-lg-6" ng-repeat="topic in Topics | orderBy:'-time'">
+				<div class="topic Card" ng-click="SetActiveTopic(topic)">
+					<h6 align="right">{{GetDate(topic.time)}}</h6>
+					<div ng-switch="topic.thumb.type">
+						<img ng-switch-when="image" src="{{topic.thumb.src}}">
+						<iframe ng-switch-when="youtube" ng-src="{{topic.thumb.src}}" allowfullscreen></iframe>
+					</div>
+					<h2 ng-bind-html="topic.name|linky"></h2>
+					<div>
+						<h6>-{{topic.owner}}</h6>
+						<h4 align="right">{{topic.comments.length}} comment</h4>
+					</div>
+				</div>
+			</div>
+	</div>
+
+<div class="chatBox {{ActiveTopic.style}}" >
+	<p class="closeChatBox" ng-click="ActiveTopic.style='chatBoxHide'">&times;</p>
+	<div ng-repeat="comment in ActiveTopic.comments | orderBy:'time'">
+		<div ng-switch="comment.thumb.type">
+			<img ng-switch-when="image" src="{{comment.thumb.src}}">
+			<iframe ng-switch-when="youtube" ng-src="{{comment.thumb.src}}" allowfullscreen></iframe>
+		</div>
+		<p ng-bind-html="comment.text|linky"></p>
+		<div title="{{GetDate(comment.time)}}" class="col-md-12">
+			<h6 class="Signature" align="right">-{{comment.owner}}</h6>
+		</div>
+	</div>
+	<div><p>ENTER COMMENT:</p><p>TEXT BOX HERE</p><p>submit button!</p></div>
 </div>
+
+<script>
+var app = angular.module('Space_Time', ['ngSanitize']);
+app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $http,$interval,$sce) {
+	$scope.now = Date.now();
+	$scope.Math = Math;
+	$scope.GetDate = function(epoch){
+		return new Date(epoch).toString();
+	};
+		
+	$scope.username = localStorage.getItem("username");
+	//onload, check for username. if none, request user input!
+	if( $scope.username == null ){
+		$scope.username = prompt("Sorry this sucks, but please enter your user name:");
+		localStorage.setItem("username",$scope.username);
+	}
+	$scope.RefreshData = function(){
+		$http.get("/API/GetTopicList")
+		.then(function(response) {
+			//console.log(response);
+			$scope.topicsKeys = response.data;
+			$scope.Topics = []
+			
+			console.log(response.data);
+			for(i in response.data){
+				$http.get("/API/GetTopicData/" + response.data[i]).
+				then(function(responce){
+					console.log(responce.data);
+					$scope.Topics.push(responce.data);
+					console.log(responce.data);
+					responce.data.text = responce.data.name;
+					$scope.CreateThumb(responce.data);				
+					
+				});
+			}
+			
+		});
+	};$scope.RefreshData();
+	$http.get("/API/LastAction").
+	then(function(res){
+		LastAction = res.data.a;
+		console.log("LastAction:",LastAction);
+		$interval(function(){
+			$http.get("/API/LastAction").
+			then(function(res){
+				if(	LastAction != res.data.a ){
+					LastAction = res.data.a;
+					$scope.RefreshData();
+				}
+
+			})
+		},1000);
+
+	})
+	
+	$scope.ActiveTopic = {style:"chatBoxHide"};
+	$scope.SetActiveTopic = function(topic){
+		$scope.ActiveTopic = topic;
+		$scope.ActiveTopic.style = "";
+		
+		
+		for(i in $scope.ActiveTopic.comments){
+			$scope.CreateThumb($scope.ActiveTopic.comments[i]);
+			}
+		
+	}
+	
+	var imageRegEx = /(\/\/\S*\.(?:png|jpg|gif))/i
+	var youtubeRegEx =  /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/
+	$scope.CreateThumb = function(comment){
+
+		//Detect Images
+		var image = imageRegEx.exec(comment.text);
+		if(image){
+			comment.thumb = {
+				type:"image",
+				src:"https:" + image
+			};
+				
+		}
+		//<iframe width="560" height="315" src="https://www.youtube.com/embed/gYOUC80GBpw" frameborder="0" allowfullscreen></iframe>
+		//Detect YouTube
+		var youTube = youtubeRegEx.exec(comment.text);
+		if(youTube){
+				comment.thumb = {
+					type:"youtube",
+					src:$sce.trustAsResourceUrl("https://www.youtube.com/embed/" + youTube[2])
+				}
+		}
+		console.log(comment.thumb);
+		//debugger;
+	}
+	
+	$scope.Submit = function(topic){
+		var message = {
+			name:$scope.username,
+			comment:topic.pendingComment
+		}
+		if(message.comment != "")
+		{
+			topic.pendingComment = "";
+			console.log(message);
+			$http.put("/API/PutComment/" + topic.key, message).
+			then(function(){
+				window.location.reload(true);
+			})
+		}
+	}
+	
+	$scope.createTopic = function(){
+		var Title = prompt("Post Title");
+		$http.put("/API/PutTopic", {title:Title,name:$scope.username}).
+		then(function(res){
+		});
+				
+	}
+}]);
+</script>
+
 </body>
+</html>

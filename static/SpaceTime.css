@@ -1,1 +1,61 @@
+body{
+}
+/* Material Shadows
+ * https://codepen.io/sdthornton/pen/wBZdXq
+ */
 
+.Card {
+  background: #eee;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  padding: 10px;
+  margin-bottom:10px;
+}
+
+.Card:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  cursor:pointer;
+}
+
+.createBox{
+  cursor:pointer;
+}
+
+.chatBox {
+	position:fixed;
+	right: 0;
+	top: 0/* whatever */;
+	height: 100vh;
+
+	box-shadow: -19px 0 38px rgba(0,0,0,0.30), -15px 0 12px rgba(0,0,0,0.22);
+
+	background: #222;
+	color:#fff;
+	
+	padding: 50px;
+	transition: 0.5s;
+
+	overflow-y: scroll;
+}
+
+
+.chatBoxHide {
+	position:fixed;
+	right: -1000px;
+	box-shadow: 0 0 0;
+	transition: 0.5s;	
+	overflow: hidden;
+}
+
+
+.closeChatBox {
+    position: absolute;
+    top: 7px;
+    left: 25px;
+    font-size: 36px;
+	cursor:pointer;
+
+}
+.closeChatBox:hover {
+	color:red;
+}

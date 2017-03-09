@@ -30,6 +30,8 @@ Inspired by Google Space.
 * Rework comments: needs UUID? Maybe? Deletes need accounting
 * Better Update Sys: see below!
 * LINK PARSING!: holy damn, I need link parsing bad...
+* NO MORE ALERT BOXES!: is stupid...
+* Sort: Options? Or just sort by recant comment?
 
 #Update Page System:
 I need to write a system for better managing updates. At the moment, I 
