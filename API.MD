@@ -6,12 +6,12 @@ A basic explination of how each network payload is implemented
 Objects
 -------
 
-###Space
+### Space
 
 For now, we will have one space per server. If I eventually want 
 scaliblity, this will have to be parsed out.
 
-###User
+### User
 
 ```
 //User JSON 
@@ -22,7 +22,7 @@ scaliblity, this will have to be parsed out.
 	//Do I need user stalking? probably not. If I do, it 
 }
 
-###Topic
+### Topic
 
 ```javascript
 //Topic JSON
@@ -36,7 +36,7 @@ scaliblity, this will have to be parsed out.
 }
 ```
 
-###Comments
+### Comments
 
 ```javascript
 //Comment JSON
@@ -55,7 +55,7 @@ scaliblity, this will have to be parsed out.
 
 Messages
 --------
-###GetTopicList
+### GetTopicList
 
 Gets json list of topic titles or links
 
@@ -75,7 +75,7 @@ Gets json list of topic titles or links
 	//.. more, array
 ]
 ```
-###GetTopicPage
+### GetTopicPage
 
 Same as GetTopicList, but returns 10 (?) at a time.
 
@@ -84,7 +84,7 @@ Same as GetTopicList, but returns 10 (?) at a time.
 //Same format as /API/GetTopicList, but shorter 
 ```
 
-###PutTopic
+### PutTopic
 
 create new topic, either with a title or link, content in body
 
@@ -100,7 +100,7 @@ create new topic, either with a title or link, content in body
 
 Note: On Body Error, return error
 
-###GetTopic
+### GetTopic
 
 gets json list of given topic's messages
 
@@ -131,12 +131,12 @@ gets json list of given topic's messages
 }
 ```
 
-###PutComment
+### PutComment
 
 //URL=/API/PutComment
 post comment. content in body
 
-###Poll Topics
+### Poll Topics
 
 Returns when new topic is created or comment is added.
 
