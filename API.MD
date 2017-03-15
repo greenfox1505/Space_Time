@@ -21,6 +21,7 @@ scaliblity, this will have to be parsed out.
 	//todo figure out user tokens needed for OAuth2
 	//Do I need user stalking? probably not. If I do, it 
 }
+```
 
 ### Topic
 
@@ -136,18 +137,18 @@ gets json list of given topic's messages
 //URL=/API/PutComment
 post comment. content in body
 
-### Poll Topics
+### Poll Space
 
 Returns when new topic is created or comment is added.
 
 ```javascript
-//URL=/API/PollTopic
+//URL=/API/PollSpace
 //GET
 //Returns:
 $(Epoch of last content?)
 ```
 
-### Poll Comments
+### Poll Topic
 
 Returns when comment posted. Client should only subscribe after grabbing
 full comment list.
