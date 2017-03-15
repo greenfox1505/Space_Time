@@ -147,7 +147,7 @@ Returns when new topic is created or comment is added.
 $(Epoch of last content?)
 ```
 
-###Poll Comments
+### Poll Comments
 
 Returns when comment posted. Client should only subscribe after grabbing
 full comment list.
