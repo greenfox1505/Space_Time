@@ -16,9 +16,10 @@ scaliblity, this will have to be parsed out.
 ```
 //User JSON 
 {
-	UUID:$(User UUID),
-	UserName:$(String),
+	GUID:$(User GUID),
+	DisplayName:$(String),
 	//todo figure out user tokens needed for OAuth2
+	//Do I need user stalking? probably not. If I do, it 
 }
 
 ###Topic
@@ -27,10 +28,11 @@ scaliblity, this will have to be parsed out.
 //Topic JSON
 {
 	GUID:$(Topic GUID),
-	Title:$(Title or URL of post),
+	Body:$(Title or URL of post),
+	Owner:$(GUID of owner)
 	Created:$(Epoch created),
 	Updated:$(Created or last comment date),
-	Comments:[]//array of comments
+	Comments:[]//array of comments 
 }
 ```
 
@@ -39,7 +41,15 @@ scaliblity, this will have to be parsed out.
 ```javascript
 //Comment JSON
 {
-
+	GUID:$(Comment GUID),
+	Owner:{ 
+		GUID:$(User GUID),
+		DisplayName:$(String)
+	},
+	Text:$(Contence of text)
+	Created:$(Epoch created)
+	//for DB reasons, it might make sense to doublely link this; 
+	//ie put a GUID of the parrent. Maybe not. we'll see 
 }
 ```
 
@@ -47,20 +57,31 @@ Messages
 --------
 ###GetTopicList
 
-gets json list of topic titles or links
+Gets json list of topic titles or links
 
 
 ```javascript
 //URL=/API/GetTopicList
 //GET
-//Return Body:
+//Returns:
 [
 	{
-		GUID:$(GUID),
-		Updated:$(Creation time or last comment time)
+		GUID:$(Topic GUID),
+		Body:$(Title or URL of post),
+		Owner:$(GUID of owner)
+		Created:$(Epoch created),
+		Updated:$(Created or last comment date),
 	},
 	//.. more, array
 ]
+```
+###GetTopicPage
+
+Same as GetTopicList, but returns 10 (?) at a time.
+
+```javascript
+//URL=/API/GetTopicPage/$(PAGE)
+//Same format as /API/GetTopicList, but shorter 
 ```
 
 ###PutTopic
@@ -72,8 +93,8 @@ create new topic, either with a title or link, content in body
 //PUT
 //Put Body:
 {
-	userToken:$(userToken)
-	body:$(Some user-input text; link or message or both)
+	GUID:$(User GUID)//TODO replace with tokens!
+	Body:$(Some user-input text; link or message or both)
 }
 ```
 
@@ -85,7 +106,29 @@ gets json list of given topic's messages
 
 ```javascript
 //URL=/API/GetTopic/$(Topic_GUID)
-
+//GET
+//Returns:
+{
+	GUID:$(Topic GUID),
+	Body:$(Title or URL of post),
+	Owner:$(GUID of owner)
+	Created:$(Epoch created),
+	Updated:$(Created or last comment date),
+	Comments:[
+	{
+		GUID:$(Comment GUID),
+		Owner:{ 
+			GUID:$(User GUID),
+			DisplayName:$(String)
+		},
+		Text:$(Contence of text)
+		Created:$(Epoch created)
+	},
+	//more, array, 
+	//maybe this should be transposed for network saving?
+	]
+	//array of comments 
+}
 ```
 
 ###PutComment
@@ -93,13 +136,25 @@ gets json list of given topic's messages
 //URL=/API/PutComment
 post comment. content in body
 
-###Polling
+###Poll Topics
 
-Long Polling! When a post occur
+Returns when new topic is created or comment is added.
 
 ```javascript
-//URL=/API/Poll
+//URL=/API/PollTopic
 //GET
+//Returns:
+$(Epoch of last content?)
+```
 
+###Poll Comments
 
+Returns when comment posted. Client should only subscribe after grabbing
+full comment list.
+
+```javascript
+//URL=/API/PollTopic/$(Topic_GUID)/$(Epoch of last comment)
+//GET
+//Returns same as /API/GetTopic/$(Topic_GUID) after put
+//If Epoch of last comment != URL input, return immedeately
 ```
