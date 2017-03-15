@@ -67,12 +67,13 @@ module.exports = function(TopicArgs){
 		}
 		return "ERROR, NO SUCH TOPIC";
 	}
-	
+
 	output.DUMP = function(){
-		console.log(JSON.stringify(Topics,null,2));
+		//console.log(JSON.stringify(Topics,null,2));
+		console.log("Dumping to disk");
 	}
-	
+
 	return output;
-	
+
 }
 

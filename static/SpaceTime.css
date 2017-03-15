@@ -34,8 +34,11 @@ body{
 	
 	padding: 50px;
 	transition: 0.5s;
-
 	overflow-y: scroll;
+
+}
+
+.RollingMessages {
 }
 
 
@@ -58,4 +61,8 @@ body{
 }
 .closeChatBox:hover {
 	color:red;
+}
+
+.chatTextBox {
+	color:black;
 }

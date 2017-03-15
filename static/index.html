@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<title>Space Time ProtoType</title>
-	<link rel="stylesheet" type="text/css" href="./bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css">
 	<style>
 		body {
 	background:black;
@@ -57,7 +57,7 @@
 }
 
 	</style>
-	<script src="./angular.min.js"></script>
+	<script src="lib/angular.min.js"></script>
 </head>
 <body ng-app="Space_Time" ng-controller="main" class="ng-scope">
 <div class="container">
@@ -65,7 +65,12 @@
 		<div class="col-xs-4 col-sm-2">
 			<div class="createBox"><div ng-click="createTopic()" class="createButton"><center><h1>New<br>Post</h1></center></div></div>
 		</div>
-		<div class="col-xs-8 col-sm-10">
+		<div class="col-xs-4 col-sm-2">
+			<a href="./NewClient.html">
+				<div class="createBox"><div class="createButton"><center><h1>New<br>Client</h1></center></div></div>
+			</a>
+		</div>
+		<div class="col-xs-4 col-sm-8">
 			<h1 align="right">Space-Time!</h1>
 			<h6 align="right">Logged in as<br>{{username}}</h6>
 		</div>

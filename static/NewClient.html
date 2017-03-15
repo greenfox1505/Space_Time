@@ -13,7 +13,12 @@
 		<div class="col-xs-4 col-sm-2">
 			<div class="createBox"><div ng-click="createTopic()" class="createButton"><center><h1>New<br>Post</h1></center></div></div>
 		</div>
-		<div class="col-xs-8 col-sm-10">
+		<div class="col-xs-4 col-sm-2">
+			<a href="./">
+				<div class="createBox"><div class="createButton"><center><h1>Old<br>Client</h1></center></div></div>
+			</a>
+		</div>
+		<div class="col-xs-4 col-sm-8">
 			<h1 align="right">Space-Time!</h1>
 			<h6 align="right">Logged in as<br>{{username}}</h6>
 		</div>
@@ -37,17 +42,24 @@
 
 <div class="chatBox {{ActiveTopic.style}}" >
 	<p class="closeChatBox" ng-click="ActiveTopic.style='chatBoxHide'">&times;</p>
-	<div ng-repeat="comment in ActiveTopic.comments | orderBy:'time'">
-		<div ng-switch="comment.thumb.type">
-			<img ng-switch-when="image" src="{{comment.thumb.src}}">
-			<iframe ng-switch-when="youtube" ng-src="{{comment.thumb.src}}" allowfullscreen></iframe>
-		</div>
-		<p ng-bind-html="comment.text|linky"></p>
-		<div title="{{GetDate(comment.time)}}" class="col-md-12">
-			<h6 class="Signature" align="right">-{{comment.owner}}</h6>
+	<div class="RollingMessages">
+		<div ng-repeat="comment in ActiveTopic.comments | orderBy:'time'">
+			<div ng-switch="comment.thumb.type">
+				<img ng-switch-when="image" src="{{comment.thumb.src}}">
+				<iframe ng-switch-when="youtube" ng-src="{{comment.thumb.src}}" allowfullscreen></iframe>
+			</div>
+			<p ng-bind-html="comment.text|linky"></p>
+			<div title="{{GetDate(comment.time)}}" class="col-md-12">
+				<h6 class="Signature" align="right">-{{comment.owner}}</h6>
+			</div>
 		</div>
 	</div>
-	<div><p>ENTER COMMENT:</p><p>TEXT BOX HERE</p><p>submit button!</p></div>
+
+	<div>
+		<form ng-submit="Submit(ActiveTopic)">
+			<input type="text" class="chatTextBox" ng-model="ActiveTopic.pendingComment"/>
+		</form>
+	</div>
 </div>
 
 <script>
@@ -72,13 +84,13 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 			$scope.topicsKeys = response.data;
 			$scope.Topics = []
 			
-			console.log(response.data);
+			//console.log(response.data);
 			for(i in response.data){
 				$http.get("/API/GetTopicData/" + response.data[i]).
 				then(function(responce){
-					console.log(responce.data);
+					//console.log(responce.data);
 					$scope.Topics.push(responce.data);
-					console.log(responce.data);
+					//console.log(responce.data);
 					responce.data.text = responce.data.name;
 					$scope.CreateThumb(responce.data);				
 					
@@ -90,7 +102,7 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 	$http.get("/API/LastAction").
 	then(function(res){
 		LastAction = res.data.a;
-		console.log("LastAction:",LastAction);
+		//console.log("LastAction:",LastAction);
 		$interval(function(){
 			$http.get("/API/LastAction").
 			then(function(res){
@@ -138,7 +150,7 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 					src:$sce.trustAsResourceUrl("https://www.youtube.com/embed/" + youTube[2])
 				}
 		}
-		console.log(comment.thumb);
+		//console.log(comment.thumb);
 		//debugger;
 	}
 	
@@ -150,10 +162,10 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 		if(message.comment != "")
 		{
 			topic.pendingComment = "";
-			console.log(message);
+			//console.log(message);
 			$http.put("/API/PutComment/" + topic.key, message).
 			then(function(){
-				window.location.reload(true);
+				//window.location.reload(true);
 			})
 		}
 	}

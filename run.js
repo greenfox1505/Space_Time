@@ -27,14 +27,14 @@ app.get('/API/GetTopicData/:UUID',function(req,res){
 })
 
 app.put('/API/PutComment/:UUID', jsonParser ,function(req,res){
-	if(req.body.comment != ""){
+	if(req.body.comment != "" && req.body.comment != null){
 		console.log("comment put request!", req.body);
 		var comment = {
 			owner:req.body.name,
 			time:Date.now(),
 			text:req.body.comment
 			};
-		
+
 		var value = topics.putComment(req.params.UUID,comment);
 
 		if(value !=0){
@@ -44,6 +44,10 @@ app.put('/API/PutComment/:UUID', jsonParser ,function(req,res){
 			res.send("comment recived" + req.body);
 		}
 		LastAction = comment.time;
+	}
+	else{
+		console.log("Bad Comment by : "+ req.body.name);
+		res.send("Bad Comment!");
 	}
 })
 
