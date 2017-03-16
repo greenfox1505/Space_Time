@@ -94,7 +94,7 @@ create new topic, either with a title or link, content in body
 //PUT
 //Put Body:
 {
-	GUID:$(User GUID)//TODO replace with tokens!
+	OwnerGUID:$(User GUID)//TODO replace with tokens!
 	Body:$(Some user-input text; link or message or both)
 }
 ```
