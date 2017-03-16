@@ -83,23 +83,6 @@ Same as GetTopicList, but returns 10 (?) at a time.
 ```javascript
 //URL=/API/GetTopicPage/$(PAGE)
 //Same format as /API/GetTopicList, but shorter 
-```
-
-### PutTopic
-
-create new topic, either with a title or link, content in body
-
-```javascript
-//URL=/API/PutTopic
-//PUT
-//Put Body:
-{
-	OwnerGUID:$(User GUID)//TODO replace with tokens!
-	Body:$(Some user-input text; link or message or both)
-}
-```
-
-Note: On Body Error, return error
 
 ### GetTopic
 
@@ -132,10 +115,39 @@ gets json list of given topic's messages
 }
 ```
 
+### PutTopic
+
+create new topic, either with a title or link, content in body
+
+```javascript
+//URL=/API/PutTopic
+//PUT
+//Put Body:
+{
+	OwnerGUID:$(User GUID)//TODO replace with tokens!
+	Body:$(Some user-input text; link or message or both)
+}
+```
+
+Note: On Body Error, return error
+
+
 ### PutComment
 
-//URL=/API/PutComment
 post comment. content in body
+
+```javascript
+//URL=/API/PutComment/$(TopicGUID)
+//PUT
+//Put Body:
+{
+	OwnerGUID:$(User GUID)//TODO replace with tokens!
+	Body:$(Some user-input text; link or message or both)
+}
+```
+
+Note: On Body Error, return error
+
 
 ### Poll Space
 
