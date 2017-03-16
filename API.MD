@@ -43,11 +43,8 @@ scaliblity, this will have to be parsed out.
 //Comment JSON
 {
 	GUID:$(Comment GUID),
-	Owner:{ 
-		GUID:$(User GUID),
-		DisplayName:$(String)
-	},
-	Text:$(Contence of text)
+	Owner:$(Owner GUID),
+	Body:$(Contents of text)
 	Created:$(Epoch created)
 	//for DB reasons, it might make sense to doublely link this; 
 	//ie put a GUID of the parrent. Maybe not. we'll see 
