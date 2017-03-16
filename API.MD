@@ -83,6 +83,7 @@ Same as GetTopicList, but returns 10 (?) at a time.
 ```javascript
 //URL=/API/GetTopicPage/$(PAGE)
 //Same format as /API/GetTopicList, but shorter 
+```
 
 ### GetTopic
 
