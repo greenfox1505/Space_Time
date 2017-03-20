@@ -1,77 +1,115 @@
-var UUID = require("./UUID.js");
+var GUID = require("./GUID.js");
 
 var fs = require('fs');
+
+
+/* Should I save everything as a single array of GUIDs? Thne create the
+ * Topcis object on load? Maybe. Seems ineffecant... we will decide this
+ * when we upgrade to use a DB
+ */
+ 
+
+/* IMPORTANT!
+ * This file is a stand-in for a DB. Once this object becomes too big,
+ * We will use a DB!
+ */ 
 
 module.exports = function(TopicArgs){
 	var modified = false;
 	var output = {};
-	
-	var Topics = require(TopicArgs.saveFile)
+
+	var Topics = [];
+	try{
+		var Topics = require(TopicArgs.saveFile);//data/topics.json
+	}catch(err){
+		console.error("Save File Not Found!!, Creating new file.");
+	}//redudant. DB will be handling this. TopicArgs.DB will be DB access info!
 	
 	setInterval(function(){
 		if(modified){
-			console.log("saving!");
+			console.log("WRITING FILE!" , TopicArgs.saveFile, Topics )
+			fs.writeFile(TopicArgs.saveFile, JSON.stringify(Topics));
 			modified = false;
-			fs.writeFile(TopicArgs.saveFile,JSON.stringify(Topics),function(){
-					console.log(Topics);
-				})
 		}
-	},TopicArgs.saveInterval);
-	//todo: dump to TopicsFile on interval!
+	},TopicArgs.saveInterval)
 	
-	output.getTopicList = function(){
-		var list = []
-		for( i in Topics ){
-			list.push(Topics[i].key);
-		}
-		return list;
+	//GetTopicsList
+	output.GetTopicList = function(){
+		//This get function is nessary. Eventually this will use a db, 
+		//so direct data access with be impossible
+		 return Topics;
 	}
-	output.getTopicData = function(TopicKey){
-		for( i in Topics ){
-			if(Topics[i].key==TopicKey){
+	
+	//GetTopicsPage TODO: eh, later. during below-the-fold upgrade
+
+	//GetTopic
+	output.GetTopic = function(GUID){
+		//todo: this is brute force. def needs cleanup!
+		for(i in Topics){
+			if(Topics[i].GUID == GUID){
 				return Topics[i];
 			}
 		}
 		return null;
 	}
 	
-	output.putTopic = function(TopicData){
-		modified = true;
-		/*TopicData expected:
-		 * nanme: name or link of topic
-		 * owner: poster of topic
-		 * time: epoch of create time
+	//PutTopic
+	output.PutTopic = function(newTopicData){
+		//TODO decide if sanitization happens here or before... weather or not this is a DB interation will influance that
+		/* newTopicData =
+		 * {
+		 * 	OwnerGUID:$(User GUID)
+		 * 	Body:$(Some user-input text; link or message or both)
+		 * }
 		 */
-		 var newTopic = {
-			 key:UUID(),//random at post
-			 name:TopicData.title,
-			 owner:TopicData.owner,
-			 time:TopicData.time,
-			 comments:[] //filled by users!
-		 }
-		 Topics.push(newTopic);
-		 return newTopic.key;
-	}
-	output.putComment = function(TopicKey,Comment){
+		var newTopic = {
+			GUID:GUID(),
+			Body:newTopicData.Body,
+			Owner:newTopicData.OwnerGUID,
+			Created:Date.now(),
+			Comments:[]
+		}; newTopic.Updated = newTopic.Created;
+
+		Topics.unshift(newTopic); //used unshift; profornace is bad, but will be replaced with DB
 		modified = true;
-		var newComment = {
-			owner:Comment.owner,
-			time:Comment.time,
-			text:Comment.text
-		}
-		for( i in Topics){
-			if(Topics[i].key==TopicKey){
-				Topics[i].comments.push(newComment);
-				return 0;
-			}
-		}
-		return "ERROR, NO SUCH TOPIC";
+		return newTopic.GUID;
 	}
 
-	output.DUMP = function(){
-		//console.log(JSON.stringify(Topics,null,2));
-		console.log("Dumping to disk");
+	//PutComment
+	output.PutComment = function(newCommentData){
+		/* newCommentData =
+		 * {
+		 *  TopicGUID:$(from req url)
+		 * 	OwnerGUID:$(User GUID)
+		 * 	Body:$(Some user-input text; link or message or both)
+		 * }
+		 */
+		var ThisTopic;
+		//Find matching GUID, throw error if none.
+		for( i in Topics ){
+			//TODO: this is brute force. Should be replaced with DB
+			if(Topics[i].GUID == newCommentData.TopicGUID){
+				ThisTopic = Topics[i];
+			}
+		}
+		if(ThisTopic == null){
+			throw ("Topic " + newCommentData.TopicGUID + " does not exist!");
+		}
+		else{
+			var newComment = {
+				GUID:GUID(),
+				Owner:newCommentData.OwnerGUID,
+				Body:newCommentData.Body,
+				Created:Date.now(),
+			};//TODO decide if doublelly linked
+			ThisTopic.Updated = newComment.Created;
+			ThisTopic.Comments.push(newComment); //unsift? eh
+			modified = true;
+			return newComment.GUID;
+		}
 	}
+
+	//Subscriptions handled by run.js? probably...
 
 	return output;
 

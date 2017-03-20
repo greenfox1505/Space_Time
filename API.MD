@@ -43,11 +43,8 @@ scaliblity, this will have to be parsed out.
 //Comment JSON
 {
 	GUID:$(Comment GUID),
-	Owner:{ 
-		GUID:$(User GUID),
-		DisplayName:$(String)
-	},
-	Text:$(Contence of text)
+	Owner:$(Owner GUID),
+	Body:$(Contents of text)
 	Created:$(Epoch created)
 	//for DB reasons, it might make sense to doublely link this; 
 	//ie put a GUID of the parrent. Maybe not. we'll see 
@@ -85,22 +82,6 @@ Same as GetTopicList, but returns 10 (?) at a time.
 //Same format as /API/GetTopicList, but shorter 
 ```
 
-### PutTopic
-
-create new topic, either with a title or link, content in body
-
-```javascript
-//URL=/API/PutTopic
-//PUT
-//Put Body:
-{
-	GUID:$(User GUID)//TODO replace with tokens!
-	Body:$(Some user-input text; link or message or both)
-}
-```
-
-Note: On Body Error, return error
-
 ### GetTopic
 
 gets json list of given topic's messages
@@ -132,10 +113,39 @@ gets json list of given topic's messages
 }
 ```
 
+### PutTopic
+
+create new topic, either with a title or link, content in body
+
+```javascript
+//URL=/API/PutTopic
+//PUT
+//Put Body:
+{
+	OwnerGUID:$(User GUID)//TODO replace with tokens!
+	Body:$(Some user-input text; link or message or both)
+}
+```
+
+Note: On Body Error, return error
+
+
 ### PutComment
 
-//URL=/API/PutComment
 post comment. content in body
+
+```javascript
+//URL=/API/PutComment/$(TopicGUID)
+//PUT
+//Put Body:
+{
+	OwnerGUID:$(User GUID)//TODO replace with tokens!
+	Body:$(Some user-input text; link or message or both)
+}
+```
+
+Note: On Body Error, return error
+
 
 ### Poll Space
 
