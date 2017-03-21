@@ -15,51 +15,71 @@ var LastAction = 0;
 //debug all requests
 app.all("/API*",function(req,res,next){
 	//wait, this could be used for user auth! durp. fuckit,debugger for now!
-	console.log("Serving: " + req.url);
+	console.log(Date() + ";Serving:" + req.url );
 	next();
 })
 
 //static/index.html
 app.use('/', express.static('static'))
 
-app.get('/API', function (req, res) {
-	res.send('Hello API!')
-});
+app.get('/API', function (req, res) {res.send('Hello_Wolrd.api')});
 
 app.get('/API/GetTopicList',function(req,res){
-	console.log("/API/GetTopicList Served");
 	res.send(topics.GetTopicList());
 })
 
-app.get('/API/GetTopic/:GUID',function(req,res){
-	ThisTopic = topics.GetTopic(req.params.GUID);
-	if(ThisTopic == null){
-		//return error
-		res.send({msg:"ERROR! Bad topic ID!"});
-	}
-	else
-		res.send(ThisTopic);
+app.get('/API/GetTopic',function(req,res){
+	res.send(topics.GetTopic(req.query.GUID));
 })
 
-app.put("/API/PutComment/:GUID", jsonParser, function(req,res){
-	console.log("comment", req.body);
-	NewComment = {
+app.put("/API/PutComment", jsonParser, function(req,res){
+	console.log("Comment:", req.body);
+	var NewComment = topics.PutComment({
 		OwnerGUID:req.body.OwnerGUID,
-		TopicGUID:req.params.GUID,
+		TopicGUID:req.query.GUID,
 		Body:req.body.Body,
-	}
-	var GUIDComment = topics.PutComment(NewComment);
-	res.send({msg:"Comment Posted! ", GUID: GUIDComment});
+	});
+	res.send({msg:"Comment Posted! ", GUID:NewComment.GUID});
+	
+	//throw message to subscriptions
+	ToSubscribers({
+		msg:"NewComment",
+		TopicGUID:req.query.GUID,
+		Comment:NewComment
+		})
+	
 })
 
 app.put("/API/PutTopic", jsonParser, function(req,res){
-	console.log("Topic", req.body);
-	var topicID = topics.PutTopic({
+	console.log("Topic:", req.body);
+	var NewTopic = topics.PutTopic({
 		OwnerGUID:req.body.OwnerGUID,
 		Body:req.body.Body
 	})
-	res.send({msg:"TopicPosted!", GUID:topicID});
+	res.send({msg:"TopicPosted!", GUID:NewTopic.GUID});
+
+	//throw message to subscriptions
+	ToSubscribers({msg:"NewTopic",Topic:NewTopic})
 })
+
+var Subs = [];
+
+function ToSubscribers(data){
+	console.log("SubscriberUpdate with: \n", JSON.stringify(data,null,2));
+	console.log("Subscription Message Responce Count =", Subs.length);
+	
+	var message = JSON.stringify(data);
+	
+	for( i in Subs){
+		Subs[i].send(message);
+	}
+	Subs = [];
+}
+
+app.get("/API/Subscribe", function(req,res){
+	Subs.push(res);
+})
+
 
 app.listen(settings.port, function () {
   console.log('Example app listening on port ' + settings.port + '!')

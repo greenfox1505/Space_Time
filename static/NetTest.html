@@ -1,72 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<title>API Network Test</title>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-sanitize.js"></script>
+	<script src="./SpaceTimeClient.js"></script>
 </head>
 <body ng-app="Space_Time" ng-controller="main" class="ng-scope">
 <div class="container">
-	
-	<button ng-click="AddText">CLICK ME</button>
+	<button ng-click="PutTopic('Defualt Topic')">New Topic</button>
+	<div ng-repeat="topic in Topics | orderBy:'-Updated'">
+		<p>Topic:</p>
+		<button ng-click="PutComment(topic.GUID,'Default Comment')">Click For Default Comment!</button>
+		<pre>{{string(topic)}}</pre>
+	</div>
 </div>
-
-
-<script>
-var app = angular.module('Space_Time', ['ngSanitize']);
-app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $http,$interval,$sce) {
-	$scope.now = Date.now();
-	$scope.Math = Math;
-	$scope.GetDate = function(epoch){
-		return new Date(epoch).toString();
-	};
-
-	UserGUID = "TempID"; //todo user auth!
-	
-	$scope.UpdateAll = function(){
-		return $http.get("/API/GetTopicList");
-	}
-	$scope.UpdateTopic = function(GUID){
-		return $http.get("/API/GetTopic/" + GUID);
-	}
-	$scope.PutComment = function(TopicGUID,Body){
-		return $http.put("/API/PutComment/"+TopicGUID,Body)
-	}
-	$scope.PutTopic = function(Body){
-		return $http.put("/API/PutTopic",Body)
-		//todo
-	}
-	$scope.Subscribe = function(TopicGUID){
-		//Still figuring this shit out
-		return $http.get("/API/SubscribeTopic/"+TopicGUID).
-	};
-	
-	
-	/*
-	$http.get("/API").
-	then(function(res){
-		console.log(res.data);
-	});
-	
-	$http.get("/API/GetTopicList").
-	then(function(res){
-		console.log(res.data);
-	});
-	
-	$http.put("/API/PutTopic", {OwnerGUID:UserGUID,Body:"HELLO WORLD!"}).
-	then(function(res){return $http.get("/API/GetTopic/" + res.data.GUID);}).
-	then(function(res){
-		return $http.put("/API/PutComment/" + res.data.GUID,{OwnerGUID:UserGUID,Body:"Hello Comment!"});
-	}).
-	then(function(res){
-		console.log("put done. getting Topic List!");
-		return $http.get("/API/GetTopicList");
-	}).
-	then(function(res){
-		console.log(res.data);
-	})*/
-	
-}])
-		
-</script>
 </body>
 </html>

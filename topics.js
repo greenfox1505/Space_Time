@@ -27,7 +27,7 @@ module.exports = function(TopicArgs){
 	
 	setInterval(function(){
 		if(modified){
-			console.log("WRITING FILE!" , TopicArgs.saveFile, Topics )
+			console.log("WRITING FILE!:" , TopicArgs.saveFile )
 			fs.writeFile(TopicArgs.saveFile, JSON.stringify(Topics));
 			modified = false;
 		}
@@ -72,7 +72,7 @@ module.exports = function(TopicArgs){
 
 		Topics.unshift(newTopic); //used unshift; profornace is bad, but will be replaced with DB
 		modified = true;
-		return newTopic.GUID;
+		return newTopic;
 	}
 
 	//PutComment
@@ -105,7 +105,7 @@ module.exports = function(TopicArgs){
 			ThisTopic.Updated = newComment.Created;
 			ThisTopic.Comments.push(newComment); //unsift? eh
 			modified = true;
-			return newComment.GUID;
+			return newComment;
 		}
 	}
 
