@@ -32,7 +32,14 @@ app.get('/API/GetTopic',function(req,res){
 	res.send(topics.GetTopic(req.query.GUID));
 })
 
+function ValidCheck(data,type){//function does not return, mearly throws errors on fail
+	if(data.body.Body == "" || data.body.Body == null){
+		throw "INVALID BODY";
+	}
+}
+
 app.put("/API/PutComment", jsonParser, function(req,res){
+	ValidCheck(req,"Comment");
 	console.log("Comment:", req.body);
 	var NewComment = topics.PutComment({
 		OwnerGUID:req.body.OwnerGUID,
@@ -47,10 +54,10 @@ app.put("/API/PutComment", jsonParser, function(req,res){
 		TopicGUID:req.query.GUID,
 		Comment:NewComment
 		})
-	
 })
 
 app.put("/API/PutTopic", jsonParser, function(req,res){
+	ValidCheck(req,"Topic");
 	console.log("Topic:", req.body);
 	var NewTopic = topics.PutTopic({
 		OwnerGUID:req.body.OwnerGUID,

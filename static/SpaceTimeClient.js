@@ -7,6 +7,7 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 		return new Date(epoch).toString();
 	};
 	
+	$scope.NewTopicBody = "TEMP";
 
 	UserGUID = "TempID"; //todo user auth!
 	
@@ -33,17 +34,17 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 		})
 	};
 	
-	$scope.Subscribe = function(){
+	$scope.Subscribe = function(callback){
 		$http.get("/API/Subscribe").
 		then(function(res){
-			$scope.Subscribe();
-			$scope.UpdateFromSub(res.data);
+			$scope.Subscribe(callback);
+			callback(res.data);
 		}).catch(function(){
-			console.log("Subscription Error!");
+			console.log("Subscription Error!");//TODO on error server outage message; ask for refresh!
 		})
-	};$scope.Subscribe();//TODO on error server outage message; ask for refresh!
+	};
 	
-	$scope.UpdateFromSub = function(msg){
+	$scope.Subscribe(function(msg){
 		console.log(msg);
 		if(msg.msg == "NewTopic"){
 			$scope.Topics.unshift(msg.Topic);
@@ -58,7 +59,7 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 				}
 			}
 		}
-	}
+	});
 	
 	
 }])

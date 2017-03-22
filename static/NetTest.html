@@ -5,14 +5,35 @@
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-sanitize.js"></script>
 	<script src="./SpaceTimeClient.js"></script>
+	<style>
+		h6{
+			margin-top: 0;
+		}
+		h1{
+			margin-bottom: 0;
+		}
+		p{
+			margin-bottom: 0;
+		}
+	</style>
 </head>
 <body ng-app="Space_Time" ng-controller="main" class="ng-scope">
 <div class="container">
-	<button ng-click="PutTopic('Defualt Topic')">New Topic</button>
+	<form ng-submit="PutTopic(NewTopicBody);NewTopicBody='';">
+		<input type="text" ng-model="NewTopicBody">
+		<button ng-click="PutTopic(NewTopicBody);NewTopicBody='';">Post Topic</button>
+	</form>
 	<div ng-repeat="topic in Topics | orderBy:'-Updated'">
-		<p>Topic:</p>
-		<button ng-click="PutComment(topic.GUID,'Default Comment')">Click For Default Comment!</button>
-		<pre>{{string(topic)}}</pre>
+		<h1>{{topic.Body}}</h1>
+		<h6 align="right">{{GetDate(topic.Created)}}</h6>
+		<div ng-repeat="comment in topic.Comments | orderBy:'Comments'">
+			<p>{{comment.Body}}</p>
+			<h6 align="right">{{GetDate(comment.Created)}}</h6>
+		</div>
+		<form ng-submit="PutComment(topic.GUID,topic.NewComment);topic.NewComment='';"><!--//todo make single funtion that moves pointer to text box?-->
+			<input type="textArea" ng-model="topic.NewComment">
+			<button ng-click="PutComment(topic.GUID,topic.NewComment);topic.NewComment='';">Post Comment</button>
+		</form>
 	</div>
 </div>
 </body>
