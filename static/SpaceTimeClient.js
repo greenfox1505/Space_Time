@@ -38,6 +38,8 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 		then(function(res){
 			$scope.Subscribe();
 			$scope.UpdateFromSub(res.data);
+		}).catch(function(){
+			console.log("Subscription Error!");
 		})
 	};$scope.Subscribe();//TODO on error server outage message; ask for refresh!
 	

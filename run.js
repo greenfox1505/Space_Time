@@ -75,6 +75,15 @@ function ToSubscribers(data){
 	}
 	Subs = [];
 }
+//proxy keep alive; cleans subs, forcing resend
+setInterval(function(){
+	for( i in Subs){
+		Subs[i].send("Keep Alive");
+	}
+	Subs = [];
+},60*1000);
+
+
 
 app.get("/API/Subscribe", function(req,res){
 	Subs.push(res);
