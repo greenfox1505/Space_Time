@@ -15,28 +15,15 @@ var fs = require('fs');
  */ 
 
 module.exports = function(TopicArgs){
-	var modified = false;
 	var output = {};
 
-	var Topics = [];
-	try{
-		var Topics = require(TopicArgs.saveFile);//data/topics.json
-	}catch(err){
-		console.error("Save File Not Found!!, Creating new file.");
-	}//redudant. DB will be handling this. TopicArgs.DB will be DB access info!
-	
-	setInterval(function(){
-		if(modified){
-			console.log("WRITING FILE!:" , TopicArgs.saveFile )
-			fs.writeFile(TopicArgs.saveFile, JSON.stringify(Topics));
-			modified = false;
-		}
-	},TopicArgs.saveInterval)
+	var Topics = require("./DumbFile.js")(TopicArgs);
 	
 	//GetTopicsList
 	output.GetTopicList = function(){
 		//This get function is nessary. Eventually this will use a db, 
 		//so direct data access with be impossible
+		console.log(Topics);
 		 return Topics;
 	}
 	
@@ -71,7 +58,7 @@ module.exports = function(TopicArgs){
 		}; newTopic.Updated = newTopic.Created;
 
 		Topics.unshift(newTopic); //used unshift; profornace is bad, but will be replaced with DB
-		modified = true;
+		TopicArgs.modified = true;
 		return newTopic;
 	}
 
@@ -104,7 +91,7 @@ module.exports = function(TopicArgs){
 			};//TODO decide if doublelly linked
 			ThisTopic.Updated = newComment.Created;
 			ThisTopic.Comments.push(newComment); //unsift? eh
-			modified = true;
+			TopicArgs.modified = true;
 			return newComment;
 		}
 	}

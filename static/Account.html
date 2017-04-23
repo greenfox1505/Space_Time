@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>API Network Test</title>
+	<script src="lib/angular.min.js"></script>
+	<script src="lib/angular-sanitize.js"></script>
+	<style>
+	</style>
+<script>
+var app = angular.module('Space_Time', ['ngSanitize']);
+app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $http,$interval,$sce) {
+		//detect new user
+		$scope.UserData = JSON.parse(localStorage.getItem("UserData"));
+		console.log($scope.UserData);
+		
+		if( !$scope.UserData ){
+			$scope.NewUser = true;
+			$scope.UserData = {}
+		}
+		$scope.SubmitUser = function(){
+			$http.get("/Account/NewAccount?Name=" + $scope.UserData.Name)
+			.then(function(res){
+				console.log(res.data);
+				$scope.NewUser = false;
+				$scope.UserData = res.data;
+				localStorage.setItem("UserData",JSON.stringify($scope.UserData))
+			})
+		}
+		
+		
+		//display user info
+		
+		//requst user copy
+		
+		//delete user
+		$scope.DeleteUser = function(){
+			console.log($scope.UserData);
+			localStorage.setItem("UserData",null);
+			//todo confirm delete!
+			//todo delete on server? YES
+			$http.delete("/Account/Delete?PublicGUID="+ $scope.UserData.Public.GUID + "&PrivateGUID=" + $scope.UserData.Private.GUID )
+			.then(function(res){
+				debugger;
+			})
+			location.reload()
+		}
+		//todo check account exists, on faile, trash local storage and redir to account.html
+		 
+}])
+</script>
+</head>
+<body ng-app="Space_Time" ng-controller="main" class="ng-scope">
+<div class="container">
+	<div ng-hide="!NewUser">
+		<h1>New User!</h1>
+		<h2>Enter User Name:</h2>
+		<form ng-submit="SubmitUser();">
+			<input type="text" ng-model="UserData.Name" autofocus>
+		</form>
+	</div>
+	<div ng-hide="NewUser">
+		<h1>Account</h1>
+		<p>Name: {{UserData.Public.Name}}</p>
+		<p>PublicID: {{UserData.Public.GUID}}</p>
+		<p>PrivateID: {{UserData.Private.GUID}}</p>
+		<button ng-click="DeleteUser()">DELETE?</button>
+		<a href="./">Return To Home!</a>
+	</div>
+</div>
+</body>
+</html>

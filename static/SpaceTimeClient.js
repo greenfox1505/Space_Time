@@ -1,3 +1,4 @@
+//index.html
 var app = angular.module('Space_Time', ['ngSanitize']);
 app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $http,$interval,$sce) {
 	$scope.now = Date.now();
@@ -8,8 +9,35 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 	};
 	
 	$scope.NewTopicBody = "TEMP";
+	
+	
+	$scope.UserData = JSON.parse(localStorage.getItem("UserData"));
+	if($scope.UserData == null){
+		window.location.href = "./Account.html"
+	}
+	console.log($scope.UserData);
+	//todo check account exists, on faile, trash local storage and redir to account.html
+	$http.get("/Account?GUID=" + $scope.UserData.Public.GUID).
+	then(function(){}).
+	catch(function(){
+		localStorage.setItem("UserData",null);
+		window.location.href = "./Account.html"
+	})
 
-	UserGUID = "TempID"; //todo user auth!
+	$scope.UserList = {};
+	$scope.GetUser = function(GUID){
+		if($scope.UserList[GUID] == null)
+		{
+			$scope.UserList[GUID] = {};
+			$http.get("./Account?GUID=" + GUID)
+			.then(function(res){
+				$scope.UserList[GUID] = res.data.Name;
+			});
+		}
+		else{
+			return $scope.UserList[GUID];
+		}
+	}
 	
 	$scope.GetTopicList = function(){
 		return $http.get("/API/GetTopicList").then(function(res){
@@ -23,14 +51,18 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 		return $http.get("/API/GetTopic?GUID=" + GUID);
 	}
 	$scope.PutComment = function(TopicGUID,Body){
+		console.log(TopicGUID,Body);
 		return $http.put("/API/PutComment?GUID="+TopicGUID,{
-			OwnerGUID:UserGUID,//TODO make everything UserGUID or OwnerGUID... maybe
+			PublicGUID:$scope.UserData.Public.GUID,
+			PrivateGUID:$scope.UserData.Private.GUID,
 			Body:Body
 			})
 	}
 	$scope.PutTopic = function(Body){
 		return $http.put("/API/PutTopic",{
-			Body:Body, 
+			Body:Body,
+			PublicGUID:$scope.UserData.Public.GUID,
+			PrivateGUID:$scope.UserData.Private.GUID
 		})
 	};
 	
@@ -40,6 +72,7 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 			$scope.Subscribe(callback);
 			callback(res.data);
 		}).catch(function(){
+			//debugger;
 			console.log("Subscription Error!");//TODO on error server outage message; ask for refresh!
 		})
 	};

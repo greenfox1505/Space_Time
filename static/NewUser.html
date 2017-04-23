@@ -19,9 +19,9 @@
 </head>
 <body ng-app="Space_Time" ng-controller="main" class="ng-scope">
 <div class="container">
-	<form ng-submit="PutTopic(NewTopicBody);NewTopicBody='';">
+	<form ng-submit="NewTopicBody='';">
 		<input type="text" ng-model="NewTopicBody">
-		<button ng-click="PutTopic(NewTopicBody);NewTopicBody='';">Post Topic</button>
+		<button ng-click="PutTopic(NewTopicBody);">Post Topic</button>
 	</form>
 	<div ng-repeat="topic in Topics | orderBy:'-Updated'">
 		<h1>{{topic.Body}}</h1>
