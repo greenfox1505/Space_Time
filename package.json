@@ -1,6 +1,6 @@
 {
   "name": "space_time",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A prototype chat system inspired by Google Spaces.",
   "main": "run.js",
   "scripts": {

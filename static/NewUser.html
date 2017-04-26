@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Space Time</title>
+	<title>API Network Test</title>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-sanitize.js"></script>
 	<script src="./SpaceTimeClient.js"></script>
@@ -25,14 +25,14 @@
 	</form>
 	<div ng-repeat="topic in Topics | orderBy:'-Updated'">
 		<h1>{{topic.Body}}</h1>
-		<h6 align="right">{{GetUser(topic.Owner)}} @ {{GetDate(topic.Created)}}</h6>
+		<h6 align="right">{{GetDate(topic.Created)}}</h6>
 		<div ng-repeat="comment in topic.Comments | orderBy:'Comments'">
-			<p ng-bind-html="comment.Body | linky"></p>
-			<h6 align="right">{{GetUser(comment.Owner)}} @ {{GetDate(comment.Created)}}</h6>
+			<p>{{comment.Body}}</p>
+			<h6 align="right">{{GetDate(comment.Created)}}</h6>
 		</div>
-		<form ng-submit="topic.NewComment='';"><!--//todo make single funtion that moves pointer to text box?-->
-			<textarea ng-model="topic.NewComment"></textarea>
-			<button ng-click="PutComment(topic.GUID,topic.NewComment);">Post Comment</button>
+		<form ng-submit="PutComment(topic.GUID,topic.NewComment);topic.NewComment='';"><!--//todo make single funtion that moves pointer to text box?-->
+			<input type="textArea" ng-model="topic.NewComment">
+			<button ng-click="PutComment(topic.GUID,topic.NewComment);topic.NewComment='';">Post Comment</button>
 		</form>
 	</div>
 </div>
