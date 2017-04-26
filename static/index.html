@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>API Network Test</title>
+	<title>Space Time</title>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-sanitize.js"></script>
 	<script src="./SpaceTimeClient.js"></script>
@@ -27,7 +27,7 @@
 		<h1>{{topic.Body}}</h1>
 		<h6 align="right">{{GetUser(topic.Owner)}} @ {{GetDate(topic.Created)}}</h6>
 		<div ng-repeat="comment in topic.Comments | orderBy:'Comments'">
-			<p>{{comment.Body}}</p>
+			<p ng-bind-html="comment.Body | linky"></p>
 			<h6 align="right">{{GetUser(comment.Owner)}} @ {{GetDate(comment.Created)}}</h6>
 		</div>
 		<form ng-submit="topic.NewComment='';"><!--//todo make single funtion that moves pointer to text box?-->

@@ -37,6 +37,19 @@ module.exports = function(UsersArgs){
 	}
 	
 	output.NewUser = function(Name){
+		//check user against recovery names
+		var code = Name.toLowerCase();
+		if(ShareCodes[code]){
+			if(ShareCodes[code].Expires > Date.now()){
+				return ShareCodes[code].User;
+			}
+			else{
+				throw "CODE EXPIRED!";
+			}
+			
+		}
+	
+		
 		if(!Name){
 			throw "BAD NAME"
 		}
@@ -63,7 +76,24 @@ module.exports = function(UsersArgs){
 		return NewUser;
 	}
 	
-	
+	var ShareCodes = [];
+	output.AccountCopy = function(PrivateGUID){
+		var Code= null
+		for(i in Users){
+			if(Users[i].Private.GUID == PrivateGUID){
+				Code = Math.floor(Math.random()*0x10000).toString(16);
+				ShareCodes[Code] = {
+					User : Users[i],
+					Expires : Date.now() + 30*1000 //expires in 30 secs!
+				}
+			}
+		}
+		return {
+			Code:Code,
+			Expires:ShareCodes[Code].Expires
+		}
+	}
+
 	return output;
 
 }

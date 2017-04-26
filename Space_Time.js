@@ -136,8 +136,9 @@ app.get("/Account",function(req,res){
 	res.send(users.GetUser(req.query.GUID));
 });
 
-app.get("/Account/CopyCode",function(req,res){
-	//copy account to new device!
+app.get("/Account/Copy",function(req,res){
+	console.log("req.query",req.query);
+	res.send(users.AccountCopy(req.query.PrivateGUID));
 });
 
 app.delete("/Account/Delete",function(req,res){

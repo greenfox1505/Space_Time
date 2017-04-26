@@ -40,11 +40,34 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 			//todo delete on server? YES
 			$http.delete("/Account/Delete?PublicGUID="+ $scope.UserData.Public.GUID + "&PrivateGUID=" + $scope.UserData.Private.GUID )
 			.then(function(res){
-				debugger;
+				console.log("ERROR... I don't know what this line does any more");
 			})
 			location.reload()
 		}
-		//todo check account exists, on faile, trash local storage and redir to account.html
+		
+		
+		$scope.CopyAccount = function(){
+			$http.get("/Account/Copy?PrivateGUID=" + $scope.UserData.Private.GUID)
+			.then(function(res){
+				$scope.AccountCopy = res.data;
+				$scope.AccountCopy.Delta = $scope.AccountCopy.Expires - Date.now();
+			});
+		}
+		$interval(function(){
+			if($scope.AccountCopy){
+				$scope.AccountCopy.Delta = $scope.AccountCopy.Expires - Date.now();
+				if($scope.AccountCopy.Delta < 0){
+					delete $scope.AccountCopy;
+				}
+			}
+		},100);
+		
+		$scope.ShareSecRemain = function(){
+			if($scope.AccountCopy){
+				return ($scope.AccountCopy.Delta/1000)| 0;
+			}
+			return 0;
+		}
 		 
 }])
 </script>
@@ -53,7 +76,7 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 <div class="container">
 	<div ng-hide="!NewUser">
 		<h1>New User!</h1>
-		<h2>Enter User Name:</h2>
+		<h2>Enter User Name -OR- Copy Code:</h2>
 		<form ng-submit="SubmitUser();">
 			<input type="text" ng-model="UserData.Name" autofocus>
 		</form>
@@ -64,7 +87,13 @@ app.controller('main', ['$scope', '$http','$interval', '$sce',function($scope, $
 		<p>PublicID: {{UserData.Public.GUID}}</p>
 		<p>PrivateID: {{UserData.Private.GUID}}</p>
 		<button ng-click="DeleteUser()">DELETE?</button>
-		<a href="./">Return To Home!</a>
+		<a href="./">Return To Home!</a><br>
+		<button ng-hide="AccountCopy" ng-click="CopyAccount()">Copy Account To New Device</button>
+	</div>
+	<div ng-hide="!AccountCopy">
+		<p>Copy Code: {{AccountCopy.Code}}</p>
+		<p>Expires in: {{ShareSecRemain()}} secs</p>
+		<h4>Open this webpage in a new device, and regester a new account with the Copy Code as your user name!</h4>
 	</div>
 </div>
 </body>
